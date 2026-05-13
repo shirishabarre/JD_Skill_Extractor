@@ -49,3 +49,6 @@ Open terminal:
 
 ```bash id="7quw57"
 streamlit run app.py
+
+
+Deployed URL:https://jdskillextractor-yyazo5mcpxit7ddpkyevaq.streamlit.app/
