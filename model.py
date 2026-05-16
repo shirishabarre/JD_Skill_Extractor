@@ -63,12 +63,7 @@ def get_llm_response(prompt):
 
         result = response.content
 
-        # ==========================================
-        # LANGFUSE LOGGING
-        # ==========================================
-
-        langfuse.auth_check()
-
+        # Langfuse Logging
         langfuse.score(
             name="jd_skill_extractor",
             value=1,
