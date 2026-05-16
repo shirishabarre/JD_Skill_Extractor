@@ -81,13 +81,7 @@ st.markdown("""
 Extract Skills, Experience, and Education from Job Descriptions using AI.
 </p>
 
-<ul>
-<li>✅ Groq LLM</li>
-<li>✅ LangChain</li>
-<li>✅ Langfuse Observability</li>
-<li>✅ JSON Extraction</li>
-<li>✅ Pydantic Validation</li>
-</ul>
+
 
 </div>
 """, unsafe_allow_html=True)
@@ -97,7 +91,7 @@ Extract Skills, Experience, and Education from Job Descriptions using AI.
 # ==========================================
 
 jd_input = st.text_area(
-    "📥 Paste Job Description",
+    "Paste Job Description",
     height=250
 )
 
