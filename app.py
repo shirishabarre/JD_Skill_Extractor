@@ -5,15 +5,7 @@ from prompt import prompt_template
 from parser import JobDetails
 from model import get_llm_response
 
-# ==========================================
-# PAGE CONFIG
-# ==========================================
 
-st.set_page_config(
-    page_title="AI JD Skill Extractor",
-    page_icon="🚀",
-    layout="wide"
-)
 
 # ==========================================
 # CUSTOM CSS
@@ -78,25 +70,7 @@ st.markdown("""
 <h1>📄 AI Job Description Skill Extractor</h1>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="card">
 
-<h3>🚀 Intelligent Recruitment AI System</h3>
-
-<p>
-Extract Skills, Experience, and Education from Job Descriptions using AI.
-</p>
-
-<ul>
-<li>✅ Groq LLM</li>
-<li>✅ LangChain</li>
-<li>✅ Langfuse Observability</li>
-<li>✅ JSON Extraction</li>
-<li>✅ Pydantic Validation</li>
-</ul>
-
-</div>
-""", unsafe_allow_html=True)
 
 # ==========================================
 # INPUT
