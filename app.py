@@ -158,7 +158,7 @@ if st.button("✨ Extract Information"):
 
                         st.markdown("""
                         <div class="card">
-                        <h3>🛠 Skills</h3>
+                        <h3> Skills</h3>
                         </div>
                         """, unsafe_allow_html=True)
 
