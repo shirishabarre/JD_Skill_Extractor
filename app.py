@@ -9,7 +9,11 @@ from model import get_llm_response
 # PAGE CONFIG
 # ==========================================
 
-
+st.set_page_config(
+    page_title="AI JD Skill Extractor",
+    page_icon="🚀",
+    layout="wide"
+)
 
 # ==========================================
 # CUSTOM CSS
@@ -47,6 +51,12 @@ h1 {
     height: 3.5em;
     border: none;
     font-weight: bold;
+    transition: 0.3s;
+}
+
+.stButton>button:hover {
+    transform: scale(1.02);
+    background: linear-gradient(to right, #3b82f6, #06b6d4);
 }
 
 .card {
@@ -68,8 +78,22 @@ st.markdown("""
 <h1>📄 AI Job Description Skill Extractor</h1>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<div class="card">
 
+<h3>🚀 Intelligent Recruitment AI System</h3>
 
+<p>
+Extract Skills, Experience, and Education from Job Descriptions using AI.
+</p>
+
+<ul>
+<li>✅ Groq LLM</li>
+<li>✅ LangChain</li>
+<li>✅ Langfuse Observability</li>
+<li>✅ JSON Extraction</li>
+<li>✅ Pydantic Validation</li>
+</ul>
 
 </div>
 """, unsafe_allow_html=True)
@@ -79,31 +103,38 @@ st.markdown("""
 # ==========================================
 
 jd_input = st.text_area(
-    "Paste Job Description",
-    height=250
+    "📥 Paste Job Description",
+    height=250,
+    placeholder="Paste the complete Job Description here..."
 )
 
 # ==========================================
 # BUTTON
 # ==========================================
 
-if st.button(" Extract Information"):
+if st.button("✨ Extract Information"):
 
     if jd_input.strip() == "":
-        st.warning("Please enter Job Description")
+        st.warning("⚠ Please enter Job Description")
 
     else:
 
-        with st.spinner("AI is analyzing Job Description..."):
+        with st.spinner("🤖 AI is analyzing Job Description..."):
 
             try:
 
-                # Prompt
+                # ==========================================
+                # CREATE PROMPT
+                # ==========================================
+
                 final_prompt = prompt_template.format(
                     job_description=jd_input
                 )
 
-                # Model Response
+                # ==========================================
+                # MODEL RESPONSE
+                # ==========================================
+
                 response_data = get_llm_response(final_prompt)
 
                 if response_data["success"] is False:
@@ -113,6 +144,14 @@ if st.button(" Extract Information"):
                 else:
 
                     result = response_data["response"]
+
+                    # ==========================================
+                    # RAW RESPONSE
+                    # ==========================================
+
+                    with st.expander("🔍 View Raw AI Response"):
+
+                        st.code(result)
 
                     # ==========================================
                     # CLEAN RESPONSE
@@ -132,54 +171,73 @@ if st.button(" Extract Information"):
 
                     cleaned_result = cleaned_result.strip()
 
-                    # Extract JSON safely
+                    # ==========================================
+                    # EXTRACT JSON
+                    # ==========================================
+
                     start_index = cleaned_result.find("{")
                     end_index = cleaned_result.rfind("}")
+
+                    if start_index == -1 or end_index == -1:
+
+                        raise ValueError(
+                            "No valid JSON found in model response"
+                        )
 
                     cleaned_result = cleaned_result[
                         start_index:end_index + 1
                     ]
 
-                    # Parse JSON
+                    # ==========================================
+                    # PARSE JSON
+                    # ==========================================
+
                     parsed_json = json.loads(cleaned_result)
 
-                    # Validate
+                    # ==========================================
+                    # VALIDATE OUTPUT
+                    # ==========================================
+
                     validated_output = JobDetails(**parsed_json)
 
                     st.success("✅ Extraction Successful")
 
                     # ==========================================
-                    # OUTPUT
+                    # OUTPUT SECTION
                     # ==========================================
 
                     col1, col2, col3 = st.columns(3)
 
+                    # Skills
                     with col1:
 
                         st.markdown("""
                         <div class="card">
-                        <h3> Skills</h3>
+                        <h3>🛠 Skills</h3>
                         </div>
                         """, unsafe_allow_html=True)
 
                         for skill in validated_output.skills:
+
                             st.write(f"✅ {skill}")
 
+                    # Experience
                     with col2:
 
                         st.markdown("""
                         <div class="card">
-                        <h3> Experience</h3>
+                        <h3>💼 Experience</h3>
                         </div>
                         """, unsafe_allow_html=True)
 
                         st.write(validated_output.experience)
 
+                    # Education
                     with col3:
 
                         st.markdown("""
                         <div class="card">
-                        <h3> Education</h3>
+                        <h3>🎓 Education</h3>
                         </div>
                         """, unsafe_allow_html=True)
 
@@ -191,7 +249,7 @@ if st.button(" Extract Information"):
 
                     st.markdown("""
                     <div class="card">
-                    <h3> Structured JSON Output</h3>
+                    <h3>📦 Structured JSON Output</h3>
                     </div>
                     """, unsafe_allow_html=True)
 
