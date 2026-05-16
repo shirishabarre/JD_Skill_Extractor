@@ -87,7 +87,7 @@ jd_input = st.text_area(
 # BUTTON
 # ==========================================
 
-if st.button("✨ Extract Information"):
+if st.button(" Extract Information"):
 
     if jd_input.strip() == "":
         st.warning("Please enter Job Description")
@@ -169,7 +169,7 @@ if st.button("✨ Extract Information"):
 
                         st.markdown("""
                         <div class="card">
-                        <h3>💼 Experience</h3>
+                        <h3> Experience</h3>
                         </div>
                         """, unsafe_allow_html=True)
 
@@ -179,7 +179,7 @@ if st.button("✨ Extract Information"):
 
                         st.markdown("""
                         <div class="card">
-                        <h3>🎓 Education</h3>
+                        <h3> Education</h3>
                         </div>
                         """, unsafe_allow_html=True)
 
@@ -191,7 +191,7 @@ if st.button("✨ Extract Information"):
 
                     st.markdown("""
                     <div class="card">
-                    <h3>📦 Structured JSON Output</h3>
+                    <h3> Structured JSON Output</h3>
                     </div>
                     """, unsafe_allow_html=True)
 
