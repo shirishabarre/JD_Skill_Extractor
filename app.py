@@ -68,14 +68,6 @@ st.markdown("""
 <h1>📄 AI Job Description Skill Extractor</h1>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="card">
-
-<h3>🚀 Intelligent Recruitment AI System</h3>
-
-<p>
-Extract Skills, Experience, and Education from Job Descriptions using AI.
-</p>
 
 
 
