@@ -9,11 +9,7 @@ from model import get_llm_response
 # PAGE CONFIG
 # ==========================================
 
-st.set_page_config(
-    page_title="AI JD Skill Extractor",
-    page_icon="🚀",
-    layout="wide"
-)
+
 
 # ==========================================
 # CUSTOM CSS
