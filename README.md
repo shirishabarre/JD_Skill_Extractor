@@ -444,17 +444,12 @@ This application can be useful for:
 Potential future improvements include:
 
 * Resume vs Job Description matching
-* Skill-gap analysis
 * Candidate ranking
-* Experience normalization
 * Multiple Job Description comparison
 * Export results to CSV/Excel
 * Database storage for extracted JDs
-* Job Description classification
 * Salary and location extraction
 * Semantic skill matching
-* REST API using FastAPI
-* Batch Job Description processing
 
 ---
 
