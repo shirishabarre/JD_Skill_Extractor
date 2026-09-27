@@ -13,14 +13,13 @@ load_dotenv()
 
 
 # ==========================================
-# API KEYS
+# API KEY
 # ==========================================
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-LANGFUSE_PUBLIC_KEY = os.getenv("LANGFUSE_PUBLIC_KEY")
-LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY")
-LANGFUSE_HOST = os.getenv("LANGFUSE_HOST")
+if not GROQ_API_KEY:
+    raise ValueError("GROQ_API_KEY is not configured in the .env file.")
 
 
 # ==========================================
@@ -30,19 +29,13 @@ LANGFUSE_HOST = os.getenv("LANGFUSE_HOST")
 langfuse = get_client()
 
 
-print("Langfuse Host:", LANGFUSE_HOST)
-
-if LANGFUSE_PUBLIC_KEY:
-    print("Langfuse Public Key:", LANGFUSE_PUBLIC_KEY[:10])
-
-
 # ==========================================
 # MODEL
 # ==========================================
 
 llm = ChatGroq(
     groq_api_key=GROQ_API_KEY,
-    model_name="openai/gpt-oss-120b",
+    model="openai/gpt-oss-120b",
     temperature=0
 )
 
@@ -64,17 +57,14 @@ def get_llm_response(prompt):
                 input=prompt
             )
 
-            # Call LLM
             response = llm.invoke(prompt)
 
             result = response.content
 
-            # Store output in Langfuse
             span.update(
                 output=result
             )
 
-        # Send trace data
         langfuse.flush()
 
         return {
