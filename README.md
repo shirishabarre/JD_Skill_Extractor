@@ -1,199 +1,343 @@
 # 📄 Job Description Skill Extractor
 
-An AI-powered **Job Description Skill Extractor** that automatically extracts **skills, experience, and education requirements** from unstructured Job Descriptions and presents them in a structured JSON format.
+An AI-powered **Job Description Skill Extractor** that extracts structured hiring information from unstructured Job Descriptions using **Generative AI**.
 
-The application uses an LLM through **Groq**, **LangChain PromptTemplate** for prompt management, **Pydantic** for structured output validation, and **Streamlit** for the user interface.
+The application can identify **multiple job roles within a single Job Description** and keeps the skills, experience, and education requirements associated with the correct role.
 
 ---
 
-## 🚀 Project Overview
+## 🎯 Project Overview
 
-Job Descriptions often contain important hiring requirements inside long paragraphs, making it time-consuming to manually identify the required skills, experience, and educational qualifications.
+Job descriptions are often written as long paragraphs rather than structured fields. A single document may also contain multiple job openings with different requirements.
 
-This project solves that problem by allowing a user to paste a Job Description into a simple web interface. The application sends the Job Description to an LLM with a structured extraction prompt and returns:
+For example, one document may contain:
 
-* 🛠️ Required Skills
-* 💼 Required Experience
-* 🎓 Required Education
-* 📦 Structured JSON Output
+- AI/ML Engineer
+- Data Analyst
+- Backend Developer
+
+Manually identifying and organizing the requirements for each role can be time-consuming and can lead to information being mixed between different positions.
+
+This project automatically analyzes the Job Description and converts the unstructured content into structured, job-wise JSON.
+
+---
+
+## 💡 Problem Statement
+
+Traditional Job Description processing requires manually identifying:
+
+- Job titles
+- Required skills
+- Experience requirements
+- Educational qualifications
+
+The problem becomes more challenging when a single Job Description contains multiple roles and their requirements are written in different paragraphs.
+
+The system should identify each role and maintain the relationship between the role and its corresponding requirements.
 
 ---
 
 ## 🎯 Objective
 
-The main objective of this project is to automatically convert an **unstructured Job Description into structured hiring information**.
+The objective of this project is to build an AI-powered information extraction system that:
 
-### Input
+1. Identifies every distinct job role in a Job Description.
+2. Extracts the skills associated with each role.
+3. Extracts the required experience for each role.
+4. Extracts the educational qualification for each role.
+5. Handles unstructured paragraphs without requiring predefined headings.
+6. Prevents requirements from different roles from being mixed.
+7. Produces validated structured JSON output.
+
+---
+
+# ✨ Key Features
+
+### 1. Multi-Job Detection
+
+The system can identify multiple job roles from a single Job Description.
+
+Example:
 
 ```text
-We are looking for a Python Developer with 2 years
-of experience. The candidate should have knowledge
-of Python, SQL and Machine Learning.
-
-A Bachelor's degree in Computer Science or a
-related field is preferred.
+We are hiring for AI/ML Engineer and Data Analyst positions.
 ```
 
-### Output
+The system identifies:
+
+```text
+AI/ML Engineer
+Data Analyst
+```
+
+---
+
+### 2. Unstructured JD Processing
+
+The system does not require the Job Description to follow a fixed format.
+
+It can process content such as:
+
+```text
+We are looking for talented professionals to join our team.
+The AI Engineer role requires 2 to 4 years of experience...
+The Data Analyst position requires 1 to 3 years...
+```
+
+The job title does not have to appear as:
+
+```text
+Job Title:
+```
+
+---
+
+### 3. Job-Wise Skill Extraction
+
+Skills are maintained separately for each job.
+
+Example:
+
+```text
+AI Engineer
+Python
+TensorFlow
+PyTorch
+Machine Learning
+
+Data Analyst
+SQL
+Excel
+Power BI
+Data Analysis
+```
+
+The system does not combine all skills into one list.
+
+---
+
+### 4. Experience Extraction
+
+The system extracts only the experience duration.
+
+For example:
+
+```text
+Input:
+The candidate should have 2 to 4 years of experience
+building machine learning solutions.
+
+Output:
+"2 to 4 years"
+```
+
+It does not return the entire sentence as the experience value.
+
+---
+
+### 5. Education Extraction
+
+The system extracts the educational qualification associated with each role.
+
+Example:
+
+```text
+Bachelor's degree in Computer Science,
+Artificial Intelligence or a related field
+```
+
+---
+
+### 6. Missing Information Handling
+
+If information is not available for a particular role, the system returns:
+
+```text
+not_available
+```
+
+For example:
 
 ```json
 {
+    "job_title": "Frontend Developer",
     "skills": [
-        "Python",
-        "SQL",
-        "Machine Learning"
+        "JavaScript",
+        "React",
+        "HTML",
+        "CSS"
     ],
-    "experience": "2 years",
-    "education": "Bachelor's degree in Computer Science or related field"
+    "experience": "2 to 4 years",
+    "education": "not_available"
+}
+```
+
+The system does not copy education requirements from another job.
+
+---
+
+### 7. Structured JSON Output
+
+The extracted information is converted into structured JSON and validated before being displayed.
+
+---
+
+# 🧠 Example
+
+## Input
+
+```text
+We are expanding our technology team and are looking for an
+AI Engineer and a Data Analyst.
+
+The AI Engineer should have 2 to 4 years of experience
+building machine learning solutions using Python, TensorFlow
+and PyTorch. Candidates should have a Bachelor's degree in
+Computer Science, Artificial Intelligence or a related field.
+
+The Data Analyst role requires 1 to 3 years of experience
+in SQL-based data analysis, Excel and Power BI. A Bachelor's
+degree in Statistics, Mathematics or a related discipline
+is preferred.
+```
+
+## Output
+
+```json
+{
+    "jobs": [
+        {
+            "job_title": "AI Engineer",
+            "skills": [
+                "Python",
+                "TensorFlow",
+                "PyTorch",
+                "Machine Learning"
+            ],
+            "experience": "2 to 4 years",
+            "education": "Bachelor's degree in Computer Science, Artificial Intelligence or a related field"
+        },
+        {
+            "job_title": "Data Analyst",
+            "skills": [
+                "SQL",
+                "Excel",
+                "Power BI",
+                "Data Analysis"
+            ],
+            "experience": "1 to 3 years",
+            "education": "Bachelor's degree in Statistics, Mathematics or a related discipline"
+        }
+    ]
 }
 ```
 
 ---
 
-## ✨ Features
-
-* 📄 Paste any Job Description
-* 🤖 AI-powered information extraction
-* 🛠️ Extract required technical skills
-* 💼 Extract required experience
-* 🎓 Extract educational qualifications
-* 📦 Generate structured JSON output
-* ✅ Validate output using Pydantic
-* 🚫 Reduce hallucination using strict prompt instructions
-* 📊 LLM observability using Langfuse
-* 🎨 User-friendly Streamlit interface
-* ⚡ Fast LLM inference using Groq
-
----
-
-## 🏗️ Architecture
+# 🏗️ System Architecture
 
 ```text
-                    ┌─────────────────────┐
-                    │       User          │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │   Streamlit UI      │
-                    │      app.py         │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │ LangChain Prompt    │
-                    │    prompt.py        │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │     Groq LLM        │
-                    │  LLM Processing     │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │    JSON Response    │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │  JSON Parsing       │
-                    │      app.py         │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │ Pydantic Validation │
-                    │     parser.py       │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │ Structured Output   │
-                    │ Skills / Experience │
-                    │ / Education / JSON  │
-                    └─────────────────────┘
-
-                 ┌───────────────────────┐
-                 │       Langfuse        │
-                 │ LLM Observability     │
-                 └───────────────────────┘
+                 Job Description
+                        │
+                        ▼
+              ┌───────────────────┐
+              │   Streamlit UI    │
+              └─────────┬─────────┘
+                        │
+                        ▼
+              ┌───────────────────┐
+              │ LangChain Prompt  │
+              └─────────┬─────────┘
+                        │
+                        ▼
+              ┌───────────────────┐
+              │     Groq LLM      │
+              └─────────┬─────────┘
+                        │
+                        ▼
+             Multi-Job JSON Output
+                        │
+                        ▼
+              ┌───────────────────┐
+              │   JSON Parsing    │
+              └─────────┬─────────┘
+                        │
+                        ▼
+              ┌───────────────────┐
+              │ Pydantic Validate │
+              └─────────┬─────────┘
+                        │
+                        ▼
+              ┌───────────────────┐
+              │ Streamlit Output  │
+              └───────────────────┘
+                        │
+                        ▼
+              Job-wise Information
 ```
 
 ---
 
-## 🔄 Workflow
+# 🔄 Project Workflow
 
-The application follows this workflow:
+### Step 1 — User Input
 
-### 1. User Input
+The user pastes an unstructured Job Description into the Streamlit application.
 
-The user pastes a Job Description into the Streamlit interface.
+### Step 2 — Prompt Processing
 
-### 2. Prompt Creation
+The Job Description is passed to a LangChain `PromptTemplate`.
 
-The Job Description is inserted into a predefined LangChain `PromptTemplate`.
+The prompt instructs the LLM to:
 
-The prompt instructs the LLM to extract only:
+- Detect every job role.
+- Extract role-specific skills.
+- Extract experience duration.
+- Extract education.
+- Avoid mixing requirements between roles.
+- Return `not_available` when information is missing.
+- Return only valid JSON.
 
-```text
-1. Skills
-2. Experience
-3. Education
-```
+### Step 3 — LLM Processing
 
-It also instructs the model to:
+The prompt is sent to the Groq-hosted LLM.
 
-* Return only valid JSON
-* Avoid explanations
-* Avoid Markdown
-* Avoid hallucination
-* Use `not_available` when information is missing
+### Step 4 — JSON Extraction
 
-### 3. LLM Processing
+The model response is cleaned and converted into a Python JSON object.
 
-The formatted prompt is sent to the Groq-hosted LLM.
+### Step 5 — Pydantic Validation
 
-### 4. JSON Processing
+The extracted response is validated against the defined Pydantic schema.
 
-The application cleans the model response and extracts the JSON object.
+### Step 6 — Job-Wise Display
 
-### 5. Pydantic Validation
+The Streamlit application displays each detected job separately.
 
-The JSON response is validated against the following schema:
+### Step 7 — Structured JSON
 
-```python
-class JobDetails(BaseModel):
-    skills: List[str]
-    experience: str
-    education: str
-```
-
-### 6. Display Results
-
-The validated information is displayed in the Streamlit application.
+The complete validated result is displayed as formatted JSON.
 
 ---
 
-## 🛠️ Tech Stack
+# 🛠️ Tech Stack
 
-| Technology             | Purpose                                      |
-| ---------------------- | -------------------------------------------- |
-| **Python**             | Core programming language                    |
-| **Streamlit**          | Web UI                                       |
-| **LangChain**          | Prompt management                            |
-| **Groq**               | LLM inference                                |
-| **LLM**                | Job Description understanding and extraction |
-| **Prompt Engineering** | Controlled information extraction            |
-| **Pydantic**           | Output validation                            |
-| **JSON**               | Structured output format                     |
-| **Langfuse**           | LLM observability and tracing                |
-| **python-dotenv**      | Environment variable management              |
+| Technology | Usage |
+|---|---|
+| **Python** | Core application development |
+| **Streamlit** | Web interface |
+| **LangChain** | Prompt management |
+| **Groq** | LLM inference |
+| **LLM** | Job role and requirement extraction |
+| **Prompt Engineering** | Controlled information extraction |
+| **Pydantic** | Structured output validation |
+| **JSON** | Structured data representation |
+| **Langfuse** | LLM observability |
+| **python-dotenv** | Environment variable management |
 
 ---
 
-## 📁 Project Structure
+# 📁 Project Structure
 
 ```text
 JD-Skill-Extractor/
@@ -212,39 +356,59 @@ JD-Skill-Extractor/
 
 Responsible for:
 
-* Streamlit interface
-* User input
-* Calling the extraction pipeline
-* JSON parsing
-* Pydantic validation
-* Displaying results
+- Streamlit UI
+- Job Description input
+- Calling the extraction pipeline
+- JSON processing
+- Pydantic validation
+- Job-wise result display
+- Structured JSON display
+
+### `prompt.py`
+
+Contains the LangChain prompt responsible for:
+
+- Multi-job detection
+- Skill extraction
+- Experience extraction
+- Education extraction
+- Role-specific requirement association
+- Output formatting instructions
 
 ### `model.py`
 
 Responsible for:
 
-* Groq LLM configuration
-* LLM invocation
-* Langfuse observability
-* API configuration
-
-### `prompt.py`
-
-Contains the LangChain `PromptTemplate` used to instruct the LLM.
+- Groq LLM configuration
+- LLM invocation
+- Langfuse observability
+- Environment variable loading
 
 ### `parser.py`
 
-Contains the Pydantic model used to validate the extracted information.
+Contains the Pydantic models used to validate the structured output.
+
+```python
+class JobDetails(BaseModel):
+    job_title: str
+    skills: List[str]
+    experience: str
+    education: str
+
+
+class JobExtraction(BaseModel):
+    jobs: List[JobDetails]
+```
 
 ### `requirements.txt`
 
-Contains the Python dependencies required to run the project.
+Contains the Python dependencies required to run the application.
 
 ---
 
-## ⚙️ Installation
+# ⚙️ Installation
 
-### 1. Clone the repository
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/JD-Skill-Extractor.git
@@ -254,27 +418,25 @@ git clone https://github.com/YOUR_USERNAME/JD-Skill-Extractor.git
 cd JD-Skill-Extractor
 ```
 
-### 2. Create a virtual environment
+## 2. Create a Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-### 3. Activate the environment
-
-#### Windows
+### Windows
 
 ```bash
 venv\Scripts\activate
 ```
 
-#### macOS / Linux
+### macOS / Linux
 
 ```bash
 source venv/bin/activate
 ```
 
-### 4. Install dependencies
+## 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -282,9 +444,9 @@ pip install -r requirements.txt
 
 ---
 
-## 🔑 Environment Variables
+# 🔑 Environment Variables
 
-Create a `.env` file in the project root.
+Create a `.env` file in the project root:
 
 ```env
 GROQ_API_KEY=your_groq_api_key
@@ -294,9 +456,9 @@ LANGFUSE_SECRET_KEY=your_langfuse_secret_key
 LANGFUSE_HOST=https://cloud.langfuse.com
 ```
 
-> ⚠️ Never upload your `.env` file or API keys to GitHub.
+⚠️ **Never upload `.env` or API keys to GitHub.**
 
-Add the following to `.gitignore`:
+Add this to `.gitignore`:
 
 ```text
 .env
@@ -307,9 +469,9 @@ __pycache__/
 
 ---
 
-## ▶️ Run the Application
+# ▶️ Run the Application
 
-Start the Streamlit application:
+Run:
 
 ```bash
 streamlit run app.py
@@ -319,171 +481,218 @@ The application will open in your browser.
 
 ---
 
-## 🧪 Example
+# 🧪 Testing Scenarios
 
-### Input
+The application should be tested with:
+
+### Test 1 — Single Job
+
+One Job Description containing one role.
+
+### Test 2 — Multiple Jobs
+
+One document containing:
 
 ```text
-Job Title: AI/ML Engineer
-
-We are looking for an AI/ML Engineer with 1-2 years
-of experience in Machine Learning and Artificial
-Intelligence.
-
-The candidate should have strong programming skills
-in Python and SQL. Knowledge of Machine Learning,
-Deep Learning, NLP and Generative AI is required.
-
-Experience with LLMs, Prompt Engineering, RAG,
-embeddings and vector databases is preferred.
-
-Bachelor's degree in Computer Science, Information
-Technology, Artificial Intelligence or a related field
-is required.
+AI Engineer
+Data Analyst
+Backend Developer
 ```
 
-### Extracted Skills
+### Test 3 — Unstructured Roles
+
+Job titles mentioned naturally inside paragraphs.
+
+### Test 4 — Missing Education
+
+A role without an education requirement should return:
+
+```text
+not_available
+```
+
+### Test 5 — Missing Experience
+
+A role without an experience requirement should return:
+
+```text
+not_available
+```
+
+### Test 6 — Shared Skills
+
+If two different roles both require Python, Python should appear under both roles.
+
+### Test 7 — Different Requirements
+
+Skills, experience and education should never be transferred from one role to another.
+
+### Test 8 — Multiple Roles in Introduction
+
+Example:
+
+```text
+We are hiring for AI/ML Engineer, Data Analyst
+and Backend Developer positions.
+```
+
+The system should detect all three roles even if their detailed requirements appear later in separate paragraphs.
+
+---
+
+# 🧩 Important Extraction Rules
+
+The project follows these core rules:
+
+### Rule 1 — Every role is independent
+
+Each job gets its own:
+
+```text
+Job Title
+Skills
+Experience
+Education
+```
+
+### Rule 2 — No requirement mixing
+
+Requirements belonging to one role must never be assigned to another role.
+
+### Rule 3 — Concise experience
+
+The experience field contains only the duration.
+
+```text
+2 to 4 years
+```
+
+not:
+
+```text
+2 to 4 years of experience developing machine learning solutions using Python...
+```
+
+### Rule 4 — Individual skills
+
+Skills are extracted as individual items.
 
 ```text
 Python
-SQL
+TensorFlow
 Machine Learning
-Deep Learning
-NLP
-Generative AI
-LLMs
-Prompt Engineering
-RAG
-Embeddings
-Vector Databases
 ```
 
-### Experience
+rather than copying entire sentences.
+
+### Rule 5 — No hallucination
+
+The system does not assume missing information.
+
+Missing fields return:
 
 ```text
-1-2 years
+not_available
 ```
 
-### Education
+---
+
+# 💼 Business Use Cases
+
+The project can be used for:
+
+- Recruitment automation
+- Job Description analysis
+- HR information extraction
+- Job requirement standardization
+- Resume-job matching
+- Candidate screening
+- Skill-gap analysis
+- Recruitment analytics
+- Job market analysis
+
+---
+
+# 🚀 Future Enhancements
+
+The current project focuses on **Phase 1: Multi-Job Extraction**.
+
+Future phases can include:
+
+### Phase 2 — Advanced JD Analysis
+
+- Required vs Preferred skills
+- Responsibilities extraction
+- Job seniority detection
+- Job location
+- Employment type
+- Job summary
+- Skill categorization
+
+### Phase 3 — Resume Matching
+
+Allow users to upload a resume and compare it against a selected job.
+
+Example:
 
 ```text
-Bachelor's degree in Computer Science, Information
-Technology, Artificial Intelligence or related field
+Overall Match: 82%
+
+Matched Skills
+✓ Python
+✓ SQL
+✓ Machine Learning
+
+Missing Skills
+✗ AWS
+✗ Docker
 ```
 
-### Structured JSON
+### Phase 4 — Skill Gap Analysis
 
-```json
-{
-    "skills": [
-        "Python",
-        "SQL",
-        "Machine Learning",
-        "Deep Learning",
-        "NLP",
-        "Generative AI",
-        "LLMs",
-        "Prompt Engineering",
-        "RAG",
-        "Embeddings",
-        "Vector Databases"
-    ],
-    "experience": "1-2 years",
-    "education": "Bachelor's degree in Computer Science, Information Technology, Artificial Intelligence or related field"
-}
-```
+Identify the skills a candidate needs to develop for a particular role.
+
+### Phase 5 — Recruitment Dashboard
+
+Add:
+
+- Job history
+- Candidate matching
+- Match scores
+- Skill analytics
+- CSV/Excel export
+- PDF reports
 
 ---
 
-## 🧠 Key Technical Concepts
+# 📌 Project Highlights
 
-### Prompt Engineering
-
-The project uses a strict extraction prompt to control the LLM response.
-
-Instead of allowing the LLM to generate a conversational answer, the prompt defines the exact fields and expected JSON structure.
-
-### Structured Output
-
-The application converts unstructured Job Description text into structured data:
-
-```text
-Unstructured JD
-       ↓
-     LLM
-       ↓
-Structured JSON
-```
-
-### Pydantic Validation
-
-Pydantic ensures that the extracted response follows the expected schema before displaying it to the user.
-
-### LLM Observability
-
-Langfuse is integrated to provide visibility into LLM interactions and help with debugging and monitoring.
+- Built an end-to-end **Generative AI information extraction application**
+- Handles **multiple job roles from a single unstructured Job Description**
+- Uses **prompt engineering** for controlled extraction
+- Maintains role-specific relationships between requirements
+- Uses **Pydantic for structured validation**
+- Uses **Groq for LLM inference**
+- Uses **LangChain for prompt management**
+- Uses **Langfuse for LLM observability**
+- Uses **Streamlit for the interactive UI**
+- Handles missing information using `not_available`
+- Produces clean, structured JSON output
 
 ---
 
-## 💡 Use Cases
-
-This application can be useful for:
-
-* 👨‍💼 Recruiters
-* 🏢 HR teams
-* 📄 Resume screening systems
-* 🔎 Job matching applications
-* 🤖 Recruitment automation
-* 📊 Job market analysis
-* 🧑‍💻 Candidate-job matching systems
-
----
-
-## 🔮 Future Enhancements
-
-Potential future improvements include:
-
-* Resume vs Job Description matching
-* Candidate ranking
-* Multiple Job Description comparison
-* Export results to CSV/Excel
-* Database storage for extracted JDs
-* Salary and location extraction
-* Semantic skill matching
-
----
-
-## 📌 Project Highlights
-
-* Built an end-to-end **LLM-powered information extraction application**
-* Implemented **prompt engineering** for controlled output
-* Used **structured JSON generation**
-* Implemented **Pydantic validation**
-* Integrated **Groq LLM inference**
-* Added **Langfuse observability**
-* Developed an interactive **Streamlit UI**
-* Designed the system to handle missing information without hallucinating
-
----
-
-## 👨‍💻 Author
+# 👨‍💻 Author
 
 **Shirisha Barre**
 
-B.Tech – Computer Science & Engineering (AI & ML)
+B.Tech — Computer Science & Engineering (AI & ML)
 
 ### Areas of Interest
 
-* Artificial Intelligence
-* Machine Learning
-* Generative AI
-* Large Language Models
-* RAG
-* AI Agents
-* Python
-
----
-
-## ⭐ If you find this project useful
-
-Feel free to star ⭐ the repository and explore the project.
+- Artificial Intelligence
+- Machine Learning
+- Generative AI
+- Large Language Models
+- RAG
+- AI Agents
+- Python
