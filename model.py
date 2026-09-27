@@ -1,10 +1,9 @@
 import os
 
 from dotenv import load_dotenv
-
 from langchain_groq import ChatGroq
+from langfuse import get_client
 
-from langfuse import Langfuse
 
 # ==========================================
 # LOAD ENV
@@ -12,33 +11,30 @@ from langfuse import Langfuse
 
 load_dotenv()
 
+
 # ==========================================
 # API KEYS
 # ==========================================
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-LANGFUSE_PUBLIC_KEY = os.getenv(
-    "LANGFUSE_PUBLIC_KEY"
-)
+LANGFUSE_PUBLIC_KEY = os.getenv("LANGFUSE_PUBLIC_KEY")
+LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY")
+LANGFUSE_HOST = os.getenv("LANGFUSE_HOST")
 
-LANGFUSE_SECRET_KEY = os.getenv(
-    "LANGFUSE_SECRET_KEY"
-)
-
-LANGFUSE_HOST = os.getenv(
-    "LANGFUSE_HOST"
-)
 
 # ==========================================
 # LANGFUSE
 # ==========================================
 
-langfuse = Langfuse(
-    public_key=LANGFUSE_PUBLIC_KEY,
-    secret_key=LANGFUSE_SECRET_KEY,
-    host=LANGFUSE_HOST
-)
+langfuse = get_client()
+
+
+print("Langfuse Host:", LANGFUSE_HOST)
+
+if LANGFUSE_PUBLIC_KEY:
+    print("Langfuse Public Key:", LANGFUSE_PUBLIC_KEY[:10])
+
 
 # ==========================================
 # MODEL
@@ -46,9 +42,10 @@ langfuse = Langfuse(
 
 llm = ChatGroq(
     groq_api_key=GROQ_API_KEY,
-    model_name="llama-3.3-70b-versatile",
+    model_name="openai/gpt-oss-120b",
     temperature=0
 )
+
 
 # ==========================================
 # FUNCTION
@@ -58,18 +55,26 @@ def get_llm_response(prompt):
 
     try:
 
-        # LLM Call
-        response = llm.invoke(prompt)
+        with langfuse.start_as_current_observation(
+            as_type="span",
+            name="jd_skill_extractor"
+        ) as span:
 
-        result = response.content
+            span.update(
+                input=prompt
+            )
 
-        # Langfuse Logging
-        langfuse.score(
-            name="jd_skill_extractor",
-            value=1,
-            comment=result
-        )
+            # Call LLM
+            response = llm.invoke(prompt)
 
+            result = response.content
+
+            # Store output in Langfuse
+            span.update(
+                output=result
+            )
+
+        # Send trace data
         langfuse.flush()
 
         return {
