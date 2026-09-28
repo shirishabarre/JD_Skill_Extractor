@@ -680,19 +680,4 @@ Add:
 - Produces clean, structured JSON output
 
 ---
-
-# 👨‍💻 Author
-
-**Shirisha Barre**
-
-B.Tech — Computer Science & Engineering (AI & ML)
-
-### Areas of Interest
-
-- Artificial Intelligence
-- Machine Learning
-- Generative AI
-- Large Language Models
-- RAG
-- AI Agents
-- Python
+Deployed URL: https://jdskillextractor-yyazo5mcpxit7ddpkyevaq.streamlit.app/
